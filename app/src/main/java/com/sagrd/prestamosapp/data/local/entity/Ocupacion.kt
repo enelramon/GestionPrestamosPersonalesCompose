@@ -10,3 +10,5 @@ data class Ocupacion(
     val descripcion: String,
     val salario: Double
 )
+
+

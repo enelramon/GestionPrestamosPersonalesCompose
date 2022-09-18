@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow;
 
 @Dao
 interface OcupacionDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(ocupacion: Ocupacion)
 
