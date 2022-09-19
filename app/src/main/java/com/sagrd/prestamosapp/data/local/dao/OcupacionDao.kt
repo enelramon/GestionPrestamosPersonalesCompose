@@ -17,7 +17,7 @@ interface OcupacionDao {
             "FROM Ocupaciones " +
             "WHERE OcupacionId = :ocupacionId " +
             "LIMIT 1")
-    suspend fun find(ocupacionId: Int): Ocupacion
+    suspend fun find(ocupacionId: Int): Ocupacion?
 
     @Query("SELECT * FROM Ocupaciones")
     fun getList(): Flow<List<Ocupacion>>

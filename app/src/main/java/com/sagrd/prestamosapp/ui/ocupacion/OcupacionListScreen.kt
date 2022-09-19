@@ -1,5 +1,6 @@
 package com.sagrd.prestamosapp.ui.ocupacion
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +21,8 @@ import com.sagrd.prestamosapp.ui.theme.PrestamosAppTheme
 
 @Composable
 fun OcupacionListaScreen(
-    onNavigateToOcupacion: (Int) -> Unit,
-    viewModel: OcupacionListViewModel = hiltViewModel()
+    viewModel: OcupacionListViewModel = hiltViewModel(),
+            onNavigateToOcupacion: (Int) -> Unit
 ) {
     val uiState = viewModel.uiState
 
@@ -75,7 +76,8 @@ fun OcupacionRow(ocupacion: Ocupacion, onOcupacionClick: (Int) -> Unit) {
             .padding(8.dp)
             .clickable(
                 onClick = {
-                    onOcupacionClick(ocupacion.ocupacionId)
+                    onOcupacionClick(ocupacion.ocupacionId?:0)
+                    Log.i("parametro", ocupacion.toString())
                 }
             )
     ) {

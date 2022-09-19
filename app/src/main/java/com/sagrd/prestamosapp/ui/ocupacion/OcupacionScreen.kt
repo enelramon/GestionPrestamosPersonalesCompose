@@ -1,42 +1,69 @@
 package com.sagrd.prestamosapp.ui.ocupacion
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sagrd.prestamosapp.ui.component.TextError
 import com.sagrd.prestamosapp.ui.component.TopBar
-import com.sagrd.prestamosapp.ui.theme.PrestamosAppTheme
 
 @Composable
 fun OcupacionScreen(
+    ocupacionId: Int = 0,
     viewModel: OcupacionViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
 ) {
+    Log.i("parametro", ocupacionId.toString())
+    val id = remember(ocupacionId) {
+        viewModel.FindById(ocupacionId)
+        0
+    }
+
     val uiState = viewModel.uiState
     OcupacionesBody(uiState,
-        onSave = { viewModel.onSave() }
+        setDescripcion = { viewModel.setDescripcion(it) },
+        setSalario = { viewModel.setSalario(it) },
+        onNavigateBack = onNavigateBack,
+        onSave = {
+            if (viewModel.onSave())
+                onNavigateBack()
+        }
     )
 }
 
 @Composable
-fun OcupacionesBody(uiState: OcupacionUiState, onSave: () -> Unit) {
+fun OcupacionesBody(
+    uiState: OcupacionUiState,
+    onNavigateBack: () -> Unit,
+    onSave: () -> Unit,
+    setDescripcion: (String) -> Unit,
+    setSalario: (String) -> Unit
+) {
 
     Scaffold(
-        topBar = { TopBar(title = "Registro de Ocupaciones") },
+        topBar = { TopBar(title = "Registro de Ocupaciones", onNavigateBack=onNavigateBack) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
+            FloatingActionButton(
+                onClick = {
                 onSave()
-            }) {
+            }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Save,
                     contentDescription = "Guardar"
@@ -52,11 +79,21 @@ fun OcupacionesBody(uiState: OcupacionUiState, onSave: () -> Unit) {
                 .padding(8.dp)
         ) {
 
+            val focusManager = LocalFocusManager.current
+
             OutlinedTextField(
                 value = uiState.descripcion,
-                onValueChange = { uiState.descripcion = it },
+                onValueChange = { setDescripcion(it) },
                 isError = !uiState.descripcionError.isNullOrEmpty(),
                 label = { Text(text = "Descripción") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
             uiState.descripcionError?.let {
@@ -64,11 +101,18 @@ fun OcupacionesBody(uiState: OcupacionUiState, onSave: () -> Unit) {
             }
 
             OutlinedTextField(
-                value = uiState.salario.toString(),
-                onValueChange = { uiState.salario = it.toDoubleOrNull() ?: 0.0 },
+                value = uiState.salario,
+                onValueChange = { setSalario(it) },
                 isError = !uiState.salarioError.isNullOrEmpty(),
                 label = { Text(text = "Salario") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { onSave() }
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
             uiState.salarioError?.let {
@@ -78,6 +122,7 @@ fun OcupacionesBody(uiState: OcupacionUiState, onSave: () -> Unit) {
     }
 }
 
+/*
 @Preview
 @Composable
 fun BodyPreview() {
@@ -88,4 +133,4 @@ fun BodyPreview() {
         OcupacionesBody(state, {})
     }
 
-}
+}*/

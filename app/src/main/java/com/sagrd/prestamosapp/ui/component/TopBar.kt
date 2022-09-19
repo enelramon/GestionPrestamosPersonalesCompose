@@ -5,7 +5,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 
 @Composable
-fun TopBar(title: String) {
+fun TopBar(title: String,onNavigateBack: () -> Unit={}  ) {
     TopAppBar(
         title = { Text(title) }
     )
