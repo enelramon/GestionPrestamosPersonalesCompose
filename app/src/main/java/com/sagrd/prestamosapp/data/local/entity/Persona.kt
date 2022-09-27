@@ -2,6 +2,7 @@ package com.sagrd.prestamosapp.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.Instant
 import java.util.*
 
 @Entity(tableName = "Personas")
@@ -13,6 +14,6 @@ data class Persona(
     val celular: String,
     val email: String,
     val direccion: String,
-    val fechaNacimiento: Date,
+    val fechaNacimiento: Date = Date.from(Instant.now()),
     val ocupacionId : Int
 )

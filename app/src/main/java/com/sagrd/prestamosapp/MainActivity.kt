@@ -1,58 +1,60 @@
 package com.sagrd.prestamosapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.sagrd.prestamosapp.ui.ocupacion.OcupacionListaScreen
-import com.sagrd.prestamosapp.ui.ocupacion.OcupacionScreen
+import com.sagrd.prestamosapp.data.remote.SagApi
+import com.sagrd.prestamosapp.data.remote.dto.LoginResponseDto
+import com.sagrd.prestamosapp.data.repository.EjemploApiRepository
+import com.sagrd.prestamosapp.ui.navigation.PrestamosNavigation
 import com.sagrd.prestamosapp.ui.theme.PrestamosAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var ejemploApiRepository: EjemploApiRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             PrestamosAppTheme {
-                val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = Screen.OcupacionList.route
-                ) {
-                    composable(Screen.OcupacionList.route) {
-                        OcupacionListaScreen()
-                        { ocupacionId ->
-                            navController.navigate(Screen.OcupacionForm.route + "/$ocupacionId")
-                        }
-                    }
-                    composable(
-                        Screen.OcupacionForm.route + "/{ocupacionId}",
-                        arguments = listOf(navArgument("ocupacionId") { type = NavType.IntType })
-                    ) { backStackEntry ->
-
-                        val ocupacionId = backStackEntry.arguments?.getInt("ocupacionId") ?: 0
-                        OcupacionScreen(ocupacionId, onNavigateBack = {
-                            navController.navigateUp()
-                        })
-                    }
+                val scope = rememberCoroutineScope()
+                var response by remember {
+                    mutableStateOf(LoginResponseDto())
                 }
+                Column() {
+                    OutlinedButton(onClick = {
+                        scope.launch {
+                            response= ejemploApiRepository.Login("test@sagrd.com", "Sag.138090")
+                        }
+                    }) {
+                        Text("Login")
+                    }
+
+                    Text(text = response.toString())
+                }
+
+                /*val navController = rememberNavController()
+
+                PrestamosNavigation(navController)*/
+
             }
         }
     }
+
+
 }
 
-sealed class Screen(val route: String) {
-    object OcupacionList : Screen("OcupacionList")
-    object OcupacionForm : Screen("Ocupacion")
-}
 
 @Preview(showBackground = true)
 @Composable
