@@ -9,7 +9,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.sagrd.prestamosapp.data.remote.SagApi
 import com.sagrd.prestamosapp.data.remote.dto.LoginResponseDto
 import com.sagrd.prestamosapp.data.repository.EjemploApiRepository
 import com.sagrd.prestamosapp.ui.navigation.PrestamosNavigation

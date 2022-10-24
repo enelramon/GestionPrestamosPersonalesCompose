@@ -3,7 +3,7 @@ package com.sagrd.prestamosapp.di
 import android.content.Context
 import androidx.room.Room
 import com.sagrd.prestamosapp.data.local.PrestamosDb
-import com.sagrd.prestamosapp.data.remote.SagApi
+import com.sagrd.prestamosapp.data.remote.PrestamosApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -42,11 +42,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSagApi(moshi: Moshi): SagApi {
+    fun provideSagApi(moshi: Moshi): PrestamosApi {
+        val BASE_URL= "https://gestioninventario.azurewebsites.net/"
         return Retrofit.Builder()
-            .baseUrl("https://apisagwallet.sagrd.com/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(SagApi::class.java)
+            .create(PrestamosApi::class.java)
     }
 }
